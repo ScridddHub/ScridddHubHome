@@ -1,21 +1,507 @@
 'use client';
 
-import CanvasScrubber from '@/components/CanvasScrubber';
-import { Outfit } from 'next/font/google';
+import { useEffect, useRef, useState } from 'react';
+import { Outfit, Syne } from 'next/font/google';
+import gsap from 'gsap';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+import CanvasScrubber, { SequenceConfig } from '@/components/CanvasScrubber';
 
 const outfit = Outfit({ subsets: ['latin'], weight: ['300', '400', '500', '800'] });
+const syne = Syne({ subsets: ['latin'], weight: ['700', '800'] });
+
+// Define active sequence config based on actual generated folders:
+// - frame1build: 40 frames (PNG format)
+// - frame2build: 120 frames (PNG format)
+// - frame3build: 40 frames (PNG format)
+// - frame4build: 64 frames (PNG format)
+// - frame5build: 64 frames (PNG format)
+// - frame6build: 64 frames (PNG format)
+// - frame7build: 64 frames (PNG format)
+// - frame8build: 64 frames (PNG format)
+// - frame9build: 64 frames (PNG format)
+// - frame10: 64 frames (PNG format)
+const sequences: SequenceConfig[] = [
+  { folder: 'frame1build', frames: 40 },
+  { folder: 'frame2build', frames: 120 },
+  { folder: 'frame3build', frames: 40 },
+  { folder: 'frame4build', frames: 64 },
+  { folder: 'frame5build', frames: 64 },
+  { folder: 'frame6build', frames: 64 },
+  { folder: 'frame7build', frames: 64 },
+  { folder: 'frame8build', frames: 64 },
+  { folder: 'frame9build', frames: 64 },
+  { folder: 'frame10', frames: 64 }
+];
+
+// Stages of the construction story (All 10 active showcasing ScridddHub features!)
+const storyStages = [
+  {
+    num: "01",
+    title: "Customized ERP System",
+    desc: "A fully tailored backend mapping your specific item rate libraries, material specs, and subcontractor ledgers into one secure database."
+  },
+  {
+    num: "02",
+    title: "High-End Sales Website",
+    desc: "Propose digital blueprints, manage tender bids, and showcase ongoing progress to prospective clients in a premium brand portal."
+  },
+  {
+    num: "03",
+    title: "Supervisor & Client App",
+    desc: "Native iOS and Android mobile apps keeping managers, sub-contractors, and investors connected with real-time site updates and photo uploads."
+  },
+  {
+    num: "04",
+    title: "Autonomous AI Manager",
+    desc: "An active AI agent that monitors on-site inventory levels, auto-approves compliant delivery tickets, and flags cash leakage immediately."
+  },
+  {
+    num: "05",
+    title: "Geofenced Check-in",
+    desc: "Workers check in at the gate via geofenced facial recognition, syncing attendance with digital timesheets to prevent labor disputes."
+  },
+  {
+    num: "06",
+    title: "Subcontractor Advancements",
+    desc: " Carpenter and vendor cash advances are requested, approved, and logged in real-time matching physical milestones."
+  },
+  {
+    num: "07",
+    title: "Real-Time Site Ledger",
+    desc: "Track every operational event, delivery invoice, and excavation volume log inside a central, transparent record ledger."
+  },
+  {
+    num: "08",
+    title: "BIM & CAD Wireframe Sync",
+    desc: "Superimpose digital structural models directly over the raw ground using FPV wireframe mapping to predict clashes."
+  },
+  {
+    num: "09",
+    title: "Variation Change Orders",
+    desc: "Log client-demanded modifications instantly on-site, automatically recalculating billings and locking escrow funding."
+  },
+  {
+    num: "10",
+    title: "The Leak-Free Workspace",
+    desc: "From initial layout to the finished masterpiece. Every labor hour, brick, and dollar tracked under one unified command center."
+  }
+];
 
 export default function Home() {
+  const salesVideoRef = useRef<HTMLVideoElement>(null);
+  const factoryVideoRef = useRef<HTMLVideoElement>(null);
+
+  // States to control the transition montage
+  const [montageStep, setMontageStep] = useState<'idle' | 'montage' | 'question' | 'solution'>('idle');
+  const [activePhrase, setActivePhrase] = useState('');
+  
+  // Tracking scroll frame of the construction sequence
+  const [currentScrollFrame, setCurrentScrollFrame] = useState(1);
+
+  // Sync state to a ref to prevent stale closures in mount event listeners
+  const montageStepRef = useRef(montageStep);
+  useEffect(() => {
+    montageStepRef.current = montageStep;
+  }, [montageStep]);
+
+  // Prevent duplicate montage triggers from multiple fast wheel events
+  const hasTriggeredMontage = useRef(false);
+
+  // Skip delay control to prevent transition scrolls from triggering skips
+  const allowSkipRef = useRef(false);
+  const skipTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Determine current active stage index (0-9) based on cumulative frame counts
+  const getStageIndex = (frame: number) => {
+    let accumulated = 0;
+    for (let i = 0; i < sequences.length; i++) {
+      accumulated += sequences[i].frames;
+      if (frame <= accumulated) return i;
+    }
+    return sequences.length - 1;
+  };
+  const currentStageIndex = getStageIndex(currentScrollFrame);
+
+  useEffect(() => {
+    // Disable browser scroll restoration and force start at top on refresh
+    if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
+    gsap.registerPlugin(ScrollToPlugin);
+
+    const salesVideo = salesVideoRef.current;
+    const factoryVideo = factoryVideoRef.current;
+    if (!salesVideo || !factoryVideo) return;
+
+    // Ensure factory video is paused on load
+    factoryVideo.pause();
+    factoryVideo.currentTime = 0;
+
+    let hasStartedFactory = false;
+    let scrollTimeout: NodeJS.Timeout;
+    let phraseInterval: NodeJS.Timeout;
+    let questionTimeout: NodeJS.Timeout;
+
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const viewportHeight = window.innerHeight;
+      const triggerHeight = viewportHeight * 0.5; // 50% scroll threshold (triggers at halfway mark)
+
+      if (scrollY > triggerHeight) {
+        if (!hasStartedFactory) {
+          hasStartedFactory = true;
+          factoryVideo.currentTime = 0;
+          factoryVideo.play().catch(err => console.log("Factory video play blocked:", err));
+          
+          // Pause sales video immediately so it doesn't finish playing in the background
+          salesVideo.pause();
+        }
+
+        // If they reverse scroll back to Section 2 from the canvas scrubber (Section 3)
+        if (scrollY < viewportHeight * 1.05) {
+          if (montageStepRef.current !== 'idle') {
+            setMontageStep('idle');
+            hasTriggeredMontage.current = false;
+            
+            // Reset skip timer and flag
+            allowSkipRef.current = false;
+            if (skipTimerRef.current) {
+              clearTimeout(skipTimerRef.current);
+              skipTimerRef.current = null;
+            }
+
+            // Resume factory video looping from start
+            factoryVideo.currentTime = 0;
+            factoryVideo.play().catch(err => console.log("Factory video play blocked:", err));
+          }
+        }
+
+        // Only start the skip delay timer if we have fully scrolled to Section 2
+        if (scrollY >= viewportHeight - 15) {
+          if (!allowSkipRef.current && !skipTimerRef.current) {
+            skipTimerRef.current = setTimeout(() => {
+              allowSkipRef.current = true;
+            }, 1500); // 1.5 seconds delay before skip gesture is active
+          }
+        }
+      } else {
+        // Reset states whenever user scrolls back to the Section 1 top half
+        setMontageStep('idle');
+        clearInterval(phraseInterval);
+        clearTimeout(questionTimeout);
+        hasTriggeredMontage.current = false;
+
+        // Reset skip timer and flag
+        allowSkipRef.current = false;
+        if (skipTimerRef.current) {
+          clearTimeout(skipTimerRef.current);
+          skipTimerRef.current = null;
+        }
+
+        if (hasStartedFactory) {
+          hasStartedFactory = false;
+          factoryVideo.pause();
+          factoryVideo.currentTime = 0;
+
+          // Replay sales video from start if user scrolls back to top
+          salesVideo.currentTime = 0;
+          salesVideo.play().catch(err => console.log("Sales video play blocked:", err));
+        }
+      }
+    };
+
+    const handleSalesEnded = () => {
+      // Explicitly pause the sales video to guarantee it freezes on the last frame
+      salesVideo.pause();
+
+      // Pause for 2 seconds before automatically scrolling to Section 2
+      scrollTimeout = setTimeout(() => {
+        gsap.to(window, {
+          scrollTo: window.innerHeight,
+          duration: 1.8,
+          ease: 'power3.inOut'
+        });
+
+        // Start playing factory video
+        if (!hasStartedFactory) {
+          hasStartedFactory = true;
+          factoryVideo.currentTime = 0;
+          factoryVideo.play().catch(err => console.log("Factory video play blocked:", err));
+        }
+      }, 2000);
+    };
+
+    const handleFactoryEnded = () => {
+      if (hasTriggeredMontage.current) return;
+      hasTriggeredMontage.current = true;
+
+      // Freeze factory video on last frame
+      factoryVideo.pause();
+      setMontageStep('montage');
+
+      const phrases = [
+        "UNAPPROVED RATE ESTIMATES!",
+        "MILESTONE PAYMENTS BLOCKED!",
+        "MATERIAL REJECTED AT GATE!",
+        "ATTENDANCE LOG DISPUTES!",
+        "BUDGET OVERRUN BY 15%!",
+        "UNTRACKED CASH ADVANCES!",
+        "ZERO ON-SITE VISIBILITY!"
+      ];
+
+      let currentIndex = 0;
+      // Cycle through crisis phrases rapidly
+      phraseInterval = setInterval(() => {
+        if (currentIndex < phrases.length) {
+          setActivePhrase(phrases[currentIndex]);
+          currentIndex++;
+        } else {
+          clearInterval(phraseInterval);
+          setMontageStep('question');
+          
+          // Pause on the question for 1.0 second, then transition to brand reveal
+          questionTimeout = setTimeout(() => {
+            setMontageStep('solution');
+          }, 1000);
+        }
+      }, 380); // Speed of the flashing montage
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      if (allowSkipRef.current && montageStepRef.current === 'idle' && e.deltaY > 0) {
+        handleFactoryEnded();
+      }
+    };
+
+    let tsY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      tsY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (allowSkipRef.current && montageStepRef.current === 'idle') {
+        const teY = e.touches[0].clientY;
+        if (tsY - teY > 40) { // Swipe up / scroll down threshold
+          handleFactoryEnded();
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    salesVideo.addEventListener('ended', handleSalesEnded);
+    factoryVideo.addEventListener('ended', handleFactoryEnded);
+    window.addEventListener('wheel', handleWheel, { passive: true });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      salesVideo.removeEventListener('ended', handleSalesEnded);
+      factoryVideo.removeEventListener('ended', handleFactoryEnded);
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      clearTimeout(scrollTimeout);
+      clearTimeout(questionTimeout);
+      if (skipTimerRef.current) {
+        clearTimeout(skipTimerRef.current);
+      }
+      clearInterval(phraseInterval);
+    };
+  }, []);
+
   return (
-    <main className={`w-full bg-black text-white min-h-screen ${outfit.className}`}>
+    <main className={`w-full bg-black text-white min-h-screen relative ${outfit.className}`}>
       
-      {/* Pure Scroll Animation Section */}
-      <CanvasScrubber 
-        loopFolder="sequence0"
-        loopFrames={120}
-        sequenceFolders={['sequence1', 'sequence2']} 
-        framesPerSequence={120} 
-      />
+      {/* Floating Header Navigation (Visible on all scroll stages) */}
+      <header className="fixed top-0 left-0 w-full flex justify-between items-center p-8 md:p-12 z-50 pointer-events-none">
+        <div className="flex space-x-8 text-xs font-semibold uppercase tracking-widest text-white/90">
+          <span className="cursor-pointer pointer-events-auto hover:text-white transition">About</span>
+          <span className="cursor-pointer pointer-events-auto hover:text-white transition">Features</span>
+          <span className="cursor-pointer pointer-events-auto hover:text-white transition">Advantages</span>
+        </div>
+        <div className="text-xs font-semibold uppercase tracking-widest text-white/90">
+          <span>info@scridddhub.com</span>
+        </div>
+      </header>
+
+      {/* SECTION 1: Sales Studio Video & Intro Problems (Relative - slides up) */}
+      <section className="relative w-full h-screen bg-black overflow-hidden z-10">
+        <video 
+          ref={salesVideoRef}
+          autoPlay 
+          muted 
+          playsInline 
+          className="absolute inset-0 w-full h-full object-cover opacity-75"
+        >
+          <source src="/salesframe1.mp4" type="video/mp4" />
+        </video>
+        
+        {/* Dark gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/30 to-black/55 pointer-events-none" />
+
+        {/* Asymmetrical Layout - Stage 1 (Sales Office) */}
+        <div className="absolute inset-0 grid grid-cols-1 md:grid-cols-2 gap-x-16 p-8 md:p-24 pt-20 md:pt-24 z-20 pointer-events-none">
+          
+          {/* Left Column (Top aligned) */}
+          <div className="flex flex-col justify-start items-start space-y-6 md:space-y-8 mt-0 max-w-full">
+            <h1 className={`text-4xl md:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-extrabold uppercase tracking-tighter leading-[0.9] text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] ${syne.className}`}>
+              Endless<br />Changes
+            </h1>
+            
+            <div className="max-w-xs space-y-4 drop-shadow-[0_4px_6px_rgba(0,0,0,0.9)]">
+              <h3 className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-white/90">
+                The Scope Problem
+              </h3>
+              <div className="w-16 h-[2px] bg-white/70" />
+              <p className="text-sm md:text-base font-semibold leading-relaxed text-white">
+                Struggling to track and bill last-minute modifications demanded by clients after the final sign-off.
+              </p>
+            </div>
+          </div>
+
+          {/* Right Column (Offset lower) */}
+          <div className="flex flex-col justify-start items-end space-y-6 md:space-y-8 mt-12 md:mt-24 text-right justify-self-end max-w-full">
+            <h1 className={`text-4xl md:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-extrabold uppercase tracking-tighter leading-[0.9] text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] ${syne.className}`}>
+              Frozen<br />Cashflow
+            </h1>
+            
+            <div className="max-w-xs space-y-4 flex flex-col items-end drop-shadow-[0_4px_6px_rgba(0,0,0,0.9)]">
+              <h3 className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-white/90">
+                The Trust Barrier
+              </h3>
+              <div className="w-16 h-[2px] bg-white/70" />
+              <p className="text-sm md:text-base font-semibold leading-relaxed text-white">
+                Clients hesitating to release critical milestone payments due to a complete lack of physical site visibility.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Scroll hint */}
+        <div className="absolute bottom-8 left-8 md:left-24 flex items-center space-x-4 z-20 pointer-events-none">
+          <div className="w-2 h-2 bg-white rounded-full animate-ping" />
+          <span className="text-[10px] uppercase tracking-widest text-white font-bold font-sans">Scroll Down to Start the Journey</span>
+        </div>
+
+      </section>
+
+      {/* SECTION 2: Factory floor looping video (Relative - slides up to reveal Section 3) */}
+      <section className="relative w-full h-screen bg-black overflow-hidden z-10">
+        <video 
+          ref={factoryVideoRef}
+          muted 
+          playsInline 
+          className="absolute inset-0 w-full h-full object-cover opacity-75"
+        >
+          <source src="/factoryscene.mp4" type="video/mp4" />
+        </video>
+        
+        {/* Dark gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/30 to-black/55 pointer-events-none" />
+
+        {/* Normal Stage 2 Text - Only visible when NOT in montage/solution state */}
+        {montageStep === 'idle' && (
+          <div className="absolute inset-0 grid grid-cols-1 md:grid-cols-2 gap-x-16 p-8 md:p-24 pt-20 md:pt-24 z-20 pointer-events-none">
+            
+            {/* Left Column (Factory Dimension Issue) */}
+            <div className="flex flex-col justify-start items-start space-y-6 md:space-y-8 mt-0 max-w-full">
+              <h1 className={`text-4xl md:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-extrabold uppercase tracking-tighter leading-[0.9] text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] ${syne.className}`}>
+                Material<br />Leakage
+              </h1>
+              
+              <div className="max-w-xs space-y-4 drop-shadow-[0_4px_6px_rgba(0,0,0,0.9)]">
+                <h3 className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-white/90">
+                  Manufacturing Wastage
+                </h3>
+                <div className="w-16 h-[2px] bg-white/70" />
+                <p className="text-sm md:text-base font-semibold leading-relaxed text-white">
+                  Mismatched measurements on the factory floor lead to expensive lumber and veneer cut wastage.
+                </p>
+              </div>
+            </div>
+
+            {/* Right Column (Factory Advance Issue) */}
+            <div className="flex flex-col justify-start items-end space-y-6 md:space-y-8 mt-12 md:mt-24 text-right justify-self-end max-w-full">
+              <h1 className={`text-4xl md:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-extrabold uppercase tracking-tighter leading-[0.9] text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] ${syne.className}`}>
+                Advance<br />Leaks
+              </h1>
+              
+              <div className="max-w-xs space-y-4 flex flex-col items-end drop-shadow-[0_4px_6px_rgba(0,0,0,0.9)]">
+                <h3 className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-white/90">
+                  Untracked Outlays
+                </h3>
+                <div className="w-16 h-[2px] bg-white/70" />
+                <p className="text-sm md:text-base font-semibold leading-relaxed text-white">
+                  Advances handed out to carpenters and subcontractors without real-time, centralized ledger tracking.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* Dynamic Overlay: Rapid-fire Crisis Montage */}
+        {montageStep === 'montage' && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-30 p-8">
+            <h2 className={`text-3xl md:text-5xl lg:text-7xl font-extrabold text-red-500 uppercase tracking-tighter text-center drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)] animate-pulse ${syne.className}`}>
+              {activePhrase}
+            </h2>
+          </div>
+        )}
+
+        {/* Dynamic Overlay: The Question */}
+        {montageStep === 'question' && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/90 z-30 transition-all duration-1000 p-8">
+            <h2 className="text-2xl md:text-4xl font-light text-white tracking-[0.25em] text-center uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
+              So, what is the solution?
+            </h2>
+          </div>
+        )}
+
+        {/* Dynamic Overlay: The Solution Reveal & Scroll Prompt (Screen Pauses here!) */}
+        {montageStep === 'solution' && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/95 z-30 transition-all duration-1000 p-8">
+            <h1 className={`text-[9vw] font-extrabold text-white tracking-tighter text-center uppercase drop-shadow-[0_8px_24px_rgba(255,255,255,0.15)] ${syne.className}`}>
+              ScridddHub.
+            </h1>
+            <div className="mt-8 flex flex-col items-center animate-bounce">
+              <span className="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-3 font-sans">Scroll to experience the cure</span>
+              <div className="w-1 h-12 bg-white/40 rounded-full" />
+            </div>
+          </div>
+        )}
+
+      </section>
+
+      {/* SECTION 3: The Construction Build Solution (GSAP Scrubber Canvas) */}
+      <CanvasScrubber
+        sequences={sequences}
+        active={montageStep === 'solution'}
+        onFrameUpdate={(frame) => setCurrentScrollFrame(frame)}
+      >
+        {/* Asymmetrical Cinematic Overlay (Jesko Jets Style) */}
+        {(() => {
+          const isEvenStage = currentStageIndex % 2 === 0;
+          const showTextOverlay = montageStep === 'solution' && currentScrollFrame > 3;
+          return (
+            <div className={`fixed inset-0 flex items-center p-8 md:p-24 z-30 pointer-events-none transition-all duration-1000 ${showTextOverlay ? 'opacity-100' : 'opacity-0'} ${isEvenStage ? 'justify-start' : 'justify-end'}`}>
+              <div className={`max-w-xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)] ${isEvenStage ? 'text-left items-start' : 'text-right items-end flex flex-col'}`}>
+                <h2 className={`text-4xl md:text-5xl lg:text-6xl font-extrabold text-white uppercase tracking-tighter leading-[0.9] ${syne.className}`}>
+                  {storyStages[currentStageIndex]?.title}
+                </h2>
+                <div className="w-20 h-[2px] bg-white/70" />
+                <p className="text-sm md:text-base font-semibold leading-relaxed text-white/95 max-w-md">
+                  {storyStages[currentStageIndex]?.desc}
+                </p>
+              </div>
+            </div>
+          );
+        })()}
+      </CanvasScrubber>
       
     </main>
   );

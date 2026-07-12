@@ -1,98 +1,88 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+export interface SequenceConfig {
+  folder: string;
+  frames: number;
+}
+
 interface CanvasScrubberProps {
-  framesPerSequence: number;
-  sequenceFolders: string[];
-  loopFolder: string;
-  loopFrames: number;
+  sequences: SequenceConfig[];
+  active: boolean;
   onFrameUpdate?: (frame: number) => void;
+  children?: React.ReactNode;
 }
 
 export default function CanvasScrubber({ 
-  framesPerSequence, 
-  sequenceFolders, 
-  loopFolder, 
-  loopFrames, 
-  onFrameUpdate 
+  sequences, 
+  active,
+  onFrameUpdate,
+  children
 }: CanvasScrubberProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const totalScrollFrames = framesPerSequence * sequenceFolders.length;
   
+  const [scrollImages, setScrollImages] = useState<HTMLImageElement[]>([]);
+  const totalScrollFrames = sequences.reduce((sum, s) => sum + s.frames, 0);
+
+  // Helper to resolve local frame image path inside sequence folders
+  const getScrollFrameUrl = (globalIndex: number) => {
+    let accumulated = 0;
+    for (let i = 0; i < sequences.length; i++) {
+      const seq = sequences[i];
+      if (globalIndex <= accumulated + seq.frames) {
+        const localIndex = globalIndex - accumulated;
+        const padIndex = String(localIndex).padStart(3, '0');
+        return `/optimised/${seq.folder}/ezgif-frame-${padIndex}.webp`;
+      }
+      accumulated += seq.frames;
+    }
+    const lastSeq = sequences[sequences.length - 1];
+    const padIndex = String(lastSeq.frames).padStart(3, '0');
+    return `/optimised/${lastSeq.folder}/ezgif-frame-${padIndex}.webp`;
+  };
+
+  // Preload scroll images on mount once
+  useEffect(() => {
+    const images: HTMLImageElement[] = [];
+    for (let i = 1; i <= totalScrollFrames; i++) {
+      const img = new Image();
+      img.src = getScrollFrameUrl(i);
+      images.push(img);
+    }
+    setScrollImages(images);
+  }, [totalScrollFrames]);
+
+  // Handle canvas drawing and ScrollTrigger binding
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext('2d');
-    if (!canvas || !context) return;
+    if (!canvas || !context || scrollImages.length === 0) return;
 
-    // Adjust canvas resolution for high-DPI (retina) displays
+    // Adjust canvas resolution for high-DPI displays
     const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
     canvas.width = 1920 * dpr;
     canvas.height = 1080 * dpr;
 
-    // Enable high-quality image smoothing
     context.imageSmoothingEnabled = true;
     context.imageSmoothingQuality = 'high';
-
-    // Helper to get image paths
-    const getScrollFrameUrl = (globalIndex: number) => {
-      const folderIndex = Math.min(
-        Math.floor((globalIndex - 1) / framesPerSequence), 
-        sequenceFolders.length - 1
-      );
-      let localIndex = globalIndex - (folderIndex * framesPerSequence);
-      if (localIndex === 0) localIndex = 1;
-
-      const padIndex = String(localIndex).padStart(3, '0');
-      return `/${sequenceFolders[folderIndex]}/ezgif-frame-${padIndex}.jpg`;
-    };
-
-    const getLoopFrameUrl = (index: number) => {
-      const padIndex = String(index).padStart(3, '0');
-      return `/${loopFolder}/ezgif-frame-${padIndex}.jpg`;
-    };
-
-    // Preload loop images
-    const loopImages: HTMLImageElement[] = [];
-    for (let i = 1; i <= loopFrames; i++) {
-      const img = new Image();
-      img.src = getLoopFrameUrl(i);
-      loopImages.push(img);
-    }
-
-    // Preload scroll images
-    const scrollImages: HTMLImageElement[] = [];
-    for (let i = 1; i <= totalScrollFrames; i++) {
-      const img = new Image();
-      img.src = getScrollFrameUrl(i);
-      scrollImages.push(img);
-    }
-
-    // State indicators
-    let loopFrameId: number;
-    let currentLoopFrame = 0;
-    let isScrolling = false;
-    let lastTime = 0;
-    const fpsInterval = 1000 / 12; // 12 FPS for loop
 
     const animationState = {
       frame: 1
     };
 
-    // Draw function with fallback if image isn't loaded yet (prevents black screen on fast scroll)
     function drawImage(img: HTMLImageElement) {
       if (!canvas || !context || !img) return;
       
       if (!img.complete || img.width === 0) {
         img.onload = () => {
-          // Make sure this image is still the active one before drawing
           const activeIndex = Math.max(0, Math.min(Math.floor(animationState.frame) - 1, totalScrollFrames - 1));
-          const currentActiveImg = isScrolling ? scrollImages[activeIndex] : (loopImages[currentLoopFrame - 1] || loopImages[0]);
+          const currentActiveImg = scrollImages[activeIndex];
           
           if (currentActiveImg === img) {
             drawImage(img);
@@ -108,48 +98,31 @@ export default function CanvasScrubber({
       context.drawImage(img, x, y, img.width * scale, img.height * scale);
     }
 
-    // Loop animation logic (starts/resumes when scroll is at 0)
-    function animateLoop(timestamp: number) {
-      if (isScrolling) return;
-
-      loopFrameId = requestAnimationFrame(animateLoop);
-
-      const elapsed = timestamp - lastTime;
-      if (elapsed > fpsInterval) {
-        lastTime = timestamp - (elapsed % fpsInterval);
-        
-        currentLoopFrame = (currentLoopFrame % loopFrames) + 1;
-        const img = loopImages[currentLoopFrame - 1];
-        if (img) drawImage(img);
-      }
+    // Draw the very first frame initially
+    const firstImg = scrollImages[0];
+    if (firstImg) {
+      drawImage(firstImg);
     }
 
-    // Start loop immediately on mount
-    if (!isScrolling) {
-      lastTime = performance.now();
-      loopFrameId = requestAnimationFrame(animateLoop);
-    }
+    if (!active) return;
 
-    // GSAP ScrollTrigger setup
-    const scrollAnimation = gsap.to(animationState, {
-      frame: totalScrollFrames,
-      snap: "frame",
-      ease: "none",
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top top",
-        end: "bottom bottom", // Scroll mapping matches container height
-        scrub: 0.5
-      },
-      onUpdate: () => {
-        const isAtTop = typeof window !== 'undefined' ? window.scrollY === 0 : true;
-        
-        if (!isAtTop) {
-          if (!isScrolling) {
-            isScrolling = true;
-            cancelAnimationFrame(loopFrameId);
-          }
-          
+    let scrollAnimation: gsap.core.Tween;
+
+    // Wait for the browser layout to complete height changes before initializing ScrollTrigger
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+
+      scrollAnimation = gsap.to(animationState, {
+        frame: totalScrollFrames,
+        snap: "frame",
+        ease: "none",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top-=100vh top", // Start scrubbing exactly when Section 2 begins scrolling up at 100vh scroll pos
+          end: "bottom bottom",
+          scrub: 0.5
+        },
+        onUpdate: () => {
           const index = Math.max(0, Math.min(Math.floor(animationState.frame) - 1, totalScrollFrames - 1));
           const img = scrollImages[index];
           if (img) drawImage(img);
@@ -157,49 +130,39 @@ export default function CanvasScrubber({
           if (onFrameUpdate) {
             onFrameUpdate(Math.floor(animationState.frame));
           }
-        } else {
-          if (isScrolling) {
-            isScrolling = false;
-            lastTime = performance.now();
-            loopFrameId = requestAnimationFrame(animateLoop);
-          }
         }
-      }
-    });
+      });
+    }, 100);
 
     const handleResize = () => {
-      if (isScrolling) {
-        const index = Math.max(0, Math.min(Math.floor(animationState.frame) - 1, totalScrollFrames - 1));
-        const img = scrollImages[index];
-        if (img) drawImage(img);
-      } else {
-        const img = loopImages[currentLoopFrame - 1] || loopImages[0];
-        if (img) drawImage(img);
-      }
+      const index = Math.max(0, Math.min(Math.floor(animationState.frame) - 1, totalScrollFrames - 1));
+      const img = scrollImages[index];
+      if (img) drawImage(img);
     };
     window.addEventListener('resize', handleResize);
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(loopFrameId);
-      scrollAnimation.kill();
+      if (scrollAnimation) scrollAnimation.kill();
       ScrollTrigger.getAll().forEach(t => t.kill());
     };
-  }, [framesPerSequence, sequenceFolders, loopFolder, loopFrames]);
+  }, [totalScrollFrames, scrollImages, active]);
 
-  // Using a fixed overlay wrapper with a relative scroll container.
-  // This keeps the canvas locked to the background forever, preventing it from scrolling away at the end.
   return (
     <div 
       ref={containerRef} 
-      style={{ height: `${totalScrollFrames * 25}px` }} 
-      className="relative w-full"
+      style={{ height: active ? `${totalScrollFrames * 25}px` : '0px' }} 
+      className={`relative w-full ${active ? '' : 'overflow-hidden pointer-events-none'}`}
     >
-      <div className="fixed inset-0 w-full h-screen bg-black z-0 pointer-events-none">
+      <div className={`fixed inset-0 w-full h-screen bg-black z-0 pointer-events-none transition-all duration-1000 ${active ? 'opacity-100' : 'opacity-0 invisible'}`}>
         <canvas
           ref={canvasRef}
           className="w-full h-full object-cover"
         />
+      </div>
+      <div className="relative z-10 w-full">
+        {children}
       </div>
     </div>
   );

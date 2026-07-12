@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Ignore heavy raw PNG frames (WebPs in /optimised/ are used for production)
+public/frame1build/
+public/frame2build/
+public/frame3build/
+public/frame4build/
+public/frame5build/
+public/frame6build/
+public/frame7build/
+public/frame8build/
+public/frame9build/
+public/frame10/
