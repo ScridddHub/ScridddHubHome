@@ -118,7 +118,7 @@ export default function CanvasScrubber({
         ease: "none",
         scrollTrigger: {
           trigger: containerRef.current,
-          start: "top-=100vh top", // Start scrubbing exactly when Section 2 begins scrolling up at 100vh scroll pos
+          start: "top top", // Start scrubbing exactly when Section 3 reaches the top of the viewport
           end: "bottom bottom",
           scrub: 0.5
         },

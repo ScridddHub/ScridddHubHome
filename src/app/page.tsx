@@ -94,6 +94,9 @@ export default function Home() {
   // States to control the transition montage
   const [montageStep, setMontageStep] = useState<'idle' | 'montage' | 'question' | 'solution'>('idle');
   const [activePhrase, setActivePhrase] = useState('');
+
+  // States to control the active modal panel (About / Features / Advantages)
+  const [activeModal, setActiveModal] = useState<'none' | 'about' | 'features' | 'advantages'>('none');
   
   // Tracking scroll frame of the construction sequence
   const [currentScrollFrame, setCurrentScrollFrame] = useState(1);
@@ -111,6 +114,9 @@ export default function Home() {
   const allowSkipRef = useRef(false);
   const skipTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Track if user has entered Section 3 (3D canvas scrubber) to control reverse scroll resets
+  const hasEnteredSection3 = useRef(false);
+
   // Determine current active stage index (0-9) based on cumulative frame counts
   const getStageIndex = (frame: number) => {
     let accumulated = 0;
@@ -121,6 +127,18 @@ export default function Home() {
     return sequences.length - 1;
   };
   const currentStageIndex = getStageIndex(currentScrollFrame);
+
+  const handleFeaturesClick = () => {
+    setActiveModal('none');
+    setMontageStep('solution');
+    
+    // Smoothly scroll to 200vh (Section 3 start / frame1build)
+    gsap.to(window, {
+      scrollTo: window.innerHeight * 2,
+      duration: 1.5,
+      ease: 'power3.inOut'
+    });
+  };
 
   useEffect(() => {
     // Disable browser scroll restoration and force start at top on refresh
@@ -159,11 +177,17 @@ export default function Home() {
           salesVideo.pause();
         }
 
+        // Track if they have actively scrolled down into the 3D frames scrubber (Section 3)
+        if (scrollY > viewportHeight + 100 && montageStepRef.current === 'solution') {
+          hasEnteredSection3.current = true;
+        }
+
         // If they reverse scroll back to Section 2 from the canvas scrubber (Section 3)
-        if (scrollY < viewportHeight * 1.05) {
-          if (montageStepRef.current !== 'idle') {
+        if (scrollY < viewportHeight - 15) {
+          if (montageStepRef.current === 'solution' && hasEnteredSection3.current) {
             setMontageStep('idle');
             hasTriggeredMontage.current = false;
+            hasEnteredSection3.current = false; // Reset section tracking
             
             // Reset skip timer and flag
             allowSkipRef.current = false;
@@ -192,6 +216,7 @@ export default function Home() {
         clearInterval(phraseInterval);
         clearTimeout(questionTimeout);
         hasTriggeredMontage.current = false;
+        hasEnteredSection3.current = false; // Reset section tracking
 
         // Reset skip timer and flag
         allowSkipRef.current = false;
@@ -318,12 +343,13 @@ export default function Home() {
       {/* Floating Header Navigation (Visible on all scroll stages) */}
       <header className="fixed top-0 left-0 w-full flex justify-between items-center p-8 md:p-12 z-50 pointer-events-none">
         <div className="flex space-x-8 text-xs font-semibold uppercase tracking-widest text-white/90">
-          <span className="cursor-pointer pointer-events-auto hover:text-white transition">About</span>
-          <span className="cursor-pointer pointer-events-auto hover:text-white transition">Features</span>
-          <span className="cursor-pointer pointer-events-auto hover:text-white transition">Advantages</span>
+          <span onClick={() => setActiveModal('about')} className="cursor-pointer pointer-events-auto hover:text-white transition">About</span>
+          <span onClick={handleFeaturesClick} className="cursor-pointer pointer-events-auto hover:text-white transition">Features</span>
+          <span onClick={() => setActiveModal('advantages')} className="cursor-pointer pointer-events-auto hover:text-white transition">Advantages</span>
         </div>
-        <div className="text-xs font-semibold uppercase tracking-widest text-white/90">
-          <span>info@scridddhub.com</span>
+        <div className="text-xs font-semibold uppercase tracking-widest text-white/90 pointer-events-auto flex flex-col md:flex-row items-end md:items-center gap-2 md:gap-8">
+          <a href="tel:+919372652742" className="hover:text-white transition">+91 9372652742</a>
+          <a href="mailto:scridddhub@gmail.com" className="hover:text-white transition">scridddhub@gmail.com</a>
         </div>
       </header>
 
@@ -486,7 +512,7 @@ export default function Home() {
         {/* Asymmetrical Cinematic Overlay (Jesko Jets Style) */}
         {(() => {
           const isEvenStage = currentStageIndex % 2 === 0;
-          const showTextOverlay = montageStep === 'solution' && currentScrollFrame > 3;
+          const showTextOverlay = montageStep === 'solution' && currentScrollFrame > 1;
           return (
             <div className={`fixed inset-0 flex items-center p-8 md:p-24 z-30 pointer-events-none transition-all duration-1000 ${showTextOverlay ? 'opacity-100' : 'opacity-0'} ${isEvenStage ? 'justify-start' : 'justify-end'}`}>
               <div className={`max-w-xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)] ${isEvenStage ? 'text-left items-start' : 'text-right items-end flex flex-col'}`}>
@@ -502,6 +528,201 @@ export default function Home() {
           );
         })()}
       </CanvasScrubber>
+
+      {/* Full-screen Overlay Modals */}
+      {activeModal !== 'none' && (
+        <div className="fixed inset-0 bg-black/95 backdrop-blur-2xl z-[100] flex items-center justify-center p-4 md:p-12 transition-all duration-500">
+          
+          {/* Subtle Background Glow spot */}
+          <div className="absolute top-1/4 left-1/4 w-[40vw] h-[40vw] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none" />
+
+          {/* Modal Container */}
+          <div className="relative w-full max-w-6xl h-full max-h-[85vh] bg-black/40 border border-white/5 rounded-3xl p-6 md:p-16 shadow-[0_24px_80px_rgba(0,0,0,0.9)] overflow-y-auto z-10 flex flex-col md:grid md:grid-cols-12 gap-8 md:gap-12">
+            
+            {/* Close Button */}
+            <button 
+              onClick={() => setActiveModal('none')} 
+              className="absolute top-8 right-8 text-white/40 hover:text-white text-2xl transition-all duration-300 pointer-events-auto hover:rotate-90"
+            >
+              ✕
+            </button>
+
+            {/* Left Column: Big Asymmetrical Title (4 cols) */}
+            <div className="md:col-span-4 flex flex-col justify-between h-full border-b md:border-b-0 md:border-r border-white/10 pb-6 md:pb-0 md:pr-8">
+              <div className="space-y-4">
+                <span className="text-[10px] tracking-[0.4em] text-emerald-400 font-extrabold uppercase block font-sans">
+                  {activeModal === 'about' && 'Our Vision'}
+                  {activeModal === 'features' && 'Capabilities'}
+                  {activeModal === 'advantages' && 'Operational Edge'}
+                </span>
+                <h2 className={`text-4xl md:text-5xl font-black tracking-tighter text-white uppercase leading-[0.9] ${syne.className}`}>
+                  {activeModal === 'about' && 'Unified\nCommand'}
+                  {activeModal === 'features' && 'Product\nPillars'}
+                  {activeModal === 'advantages' && 'The Scriddd\nDifference'}
+                </h2>
+              </div>
+              
+              <div className="hidden md:block mt-auto">
+                <h1 className="text-[5vw] font-black uppercase text-white/[0.02] tracking-tighter leading-none select-none">
+                  {activeModal}
+                </h1>
+              </div>
+            </div>
+
+            {/* Right Column: Premium Content Blocks (8 cols) */}
+            <div className="md:col-span-8 overflow-y-auto pr-2 space-y-8 font-sans">
+              
+              {/* Modal - About */}
+              {activeModal === 'about' && (
+                <div className="space-y-8">
+                  <p className="text-gray-300 text-base md:text-lg leading-relaxed max-w-2xl font-light">
+                    ScridddHub is a high-performance operational engine engineered to bridge physical assets with digital records. We eliminate material leakage, automate subcontractor payments, and lock change-order variations for critical physical industries.
+                  </p>
+                  
+                  <div className="space-y-6">
+                    <h3 className="text-xs uppercase tracking-[0.25em] text-white/50 font-bold">Target Verticals</h3>
+                    
+                    <div className="space-y-4">
+                      {/* Vertical 1 */}
+                      <div className="group border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] p-6 rounded-2xl flex gap-6 items-start transition-all duration-300 hover:border-white/10">
+                        <span className="text-xs font-bold text-emerald-400 font-sans tracking-widest mt-1">01 /</span>
+                        <div className="space-y-2">
+                          <h4 className={`text-lg font-bold text-white uppercase tracking-tight ${syne.className}`}>Construction Developers</h4>
+                          <p className="text-xs text-gray-400 leading-relaxed max-w-xl">Automate client invoicing, track on-site excavation metrics, and sync architectural blueprints with live field operations.</p>
+                        </div>
+                      </div>
+
+                      {/* Vertical 2 */}
+                      <div className="group border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] p-6 rounded-2xl flex gap-6 items-start transition-all duration-300 hover:border-white/10">
+                        <span className="text-xs font-bold text-emerald-400 font-sans tracking-widest mt-1">02 /</span>
+                        <div className="space-y-2">
+                          <h4 className={`text-lg font-bold text-white uppercase tracking-tight ${syne.className}`}>Interior Designers</h4>
+                          <p className="text-xs text-gray-400 leading-relaxed max-w-xl">Manage specialized contractors, track advance payment approvals compliance, and update invoices dynamically based on client change orders.</p>
+                        </div>
+                      </div>
+
+                      {/* Vertical 3 */}
+                      <div className="group border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] p-6 rounded-2xl flex gap-6 items-start transition-all duration-300 hover:border-white/10">
+                        <span className="text-xs font-bold text-emerald-400 font-sans tracking-widest mt-1">03 /</span>
+                        <div className="space-y-2">
+                          <h4 className={`text-lg font-bold text-white uppercase tracking-tight ${syne.className}`}>Recycling Factories</h4>
+                          <p className="text-xs text-gray-400 leading-relaxed max-w-xl">Link raw material logistics and weight scales with geofenced facial attendance gates, ensuring exact tracking of worker shift inputs.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Modal - Features */}
+              {activeModal === 'features' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Feature 1 */}
+                  <div className="border border-white/5 bg-white/[0.01] p-6 rounded-2xl space-y-4 hover:border-white/10 transition duration-300">
+                    <span className="text-xs font-mono font-semibold tracking-wider text-emerald-400 uppercase bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">Specs ERP</span>
+                    <h4 className={`text-lg font-bold text-white uppercase ${syne.className}`}>Rate & Specification ERP</h4>
+                    <p className="text-xs text-gray-400 leading-relaxed">A central ledger containing all specifications, vendor details, and unit rate libraries. Any variation instantly recalculates costs and updates escrow funding logs.</p>
+                  </div>
+
+                  {/* Feature 2 */}
+                  <div className="border border-white/5 bg-white/[0.01] p-6 rounded-2xl space-y-4 hover:border-white/10 transition duration-300">
+                    <span className="text-xs font-mono font-semibold tracking-wider text-emerald-400 uppercase bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">AI Manager</span>
+                    <h4 className={`text-lg font-bold text-white uppercase ${syne.className}`}>Autonomous AI Site Manager</h4>
+                    <p className="text-xs text-gray-400 leading-relaxed">An active AI agent that monitors inventory compliance. It automatically scans delivery slips, verifies gate quantities, and flags cash-flow variances without manual oversight.</p>
+                  </div>
+
+                  {/* Feature 3 */}
+                  <div className="border border-white/5 bg-white/[0.01] p-6 rounded-2xl space-y-4 hover:border-white/10 transition duration-300">
+                    <span className="text-xs font-mono font-semibold tracking-wider text-emerald-400 uppercase bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">Portal</span>
+                    <h4 className={`text-lg font-bold text-white uppercase ${syne.className}`}>Client Progress Portal</h4>
+                    <p className="text-xs text-gray-400 leading-relaxed">Give investors and clients absolute visibility. Showcase live FPV site updates, digital blueprint variations, and construction milestones in a premium branded interface.</p>
+                  </div>
+
+                  {/* Feature 4 */}
+                  <div className="border border-white/5 bg-white/[0.01] p-6 rounded-2xl space-y-4 hover:border-white/10 transition duration-300">
+                    <span className="text-xs font-mono font-semibold tracking-wider text-emerald-400 uppercase bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">Verification</span>
+                    <h4 className={`text-lg font-bold text-white uppercase ${syne.className}`}>Milestone Verification Gate</h4>
+                    <p className="text-xs text-gray-400 leading-relaxed">Eliminate labor check-in fraud. Geofenced facial recognition matches actual worker hours with local payroll sheets automatically, ensuring trust-less payouts.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Modal - Advantages */}
+              {activeModal === 'advantages' && (
+                <div className="space-y-6">
+                  <p className="text-gray-300 text-sm leading-relaxed max-w-2xl font-light">
+                    Traditional operations suffer from administrative lag, material leakage, and trust barriers. ScridddHub connects physical operations directly to digital records.
+                  </p>
+
+                  <div className="space-y-4 pt-2">
+                    {/* Comparative Item 1 */}
+                    <div className="border border-white/5 bg-white/[0.01] p-6 rounded-2xl space-y-4">
+                      <h4 className={`text-base font-bold text-white uppercase tracking-wide ${syne.className}`}>Material Loss (Lumber/Veneer)</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 text-red-300 space-y-1">
+                          <span className="text-[9px] tracking-wider uppercase font-bold text-red-400/80">Traditional Methods</span>
+                          <p className="text-xs font-semibold">12% to 15% leakage at gate / factory floor</p>
+                        </div>
+                        <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/15 text-emerald-300 space-y-1">
+                          <span className="text-[9px] tracking-wider uppercase font-bold text-emerald-400/85">ScridddHub Integration</span>
+                          <p className="text-xs font-bold">0% unaccounted material logs</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Comparative Item 2 */}
+                    <div className="border border-white/5 bg-white/[0.01] p-6 rounded-2xl space-y-4">
+                      <h4 className={`text-base font-bold text-white uppercase tracking-wide ${syne.className}`}>Subcontractor Advances</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 text-red-300 space-y-1">
+                          <span className="text-[9px] tracking-wider uppercase font-bold text-red-400/80">Traditional Methods</span>
+                          <p className="text-xs font-semibold">Unverified milestone overrides & manual cash ledger advances</p>
+                        </div>
+                        <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/15 text-emerald-300 space-y-1">
+                          <span className="text-[9px] tracking-wider uppercase font-bold text-emerald-400/85">ScridddHub Integration</span>
+                          <p className="text-xs font-bold">Auto-milestone locks & digital payouts matching works</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Comparative Item 3 */}
+                    <div className="border border-white/5 bg-white/[0.01] p-6 rounded-2xl space-y-4">
+                      <h4 className={`text-base font-bold text-white uppercase tracking-wide ${syne.className}`}>Variation Change Orders</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 text-red-300 space-y-1">
+                          <span className="text-[9px] tracking-wider uppercase font-bold text-red-400/80">Traditional Methods</span>
+                          <p className="text-xs font-semibold">3-6 weeks disputes & invoice delays on modification requests</p>
+                        </div>
+                        <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/15 text-emerald-300 space-y-1">
+                          <span className="text-[9px] tracking-wider uppercase font-bold text-emerald-400/85">ScridddHub Integration</span>
+                          <p className="text-xs font-bold">Real-time dynamic billing with escrow funding updates</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Comparative Item 4 */}
+                    <div className="border border-white/5 bg-white/[0.01] p-6 rounded-2xl space-y-4">
+                      <h4 className={`text-base font-bold text-white uppercase tracking-wide ${syne.className}`}>Labor Fraud & Shift Logs</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 text-red-300 space-y-1">
+                          <span className="text-[9px] tracking-wider uppercase font-bold text-red-400/80">Traditional Methods</span>
+                          <p className="text-xs font-semibold">Manual timesheets & supervisor proxy logs at gates</p>
+                        </div>
+                        <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/15 text-emerald-300 space-y-1">
+                          <span className="text-[9px] tracking-wider uppercase font-bold text-emerald-400/85">ScridddHub Integration</span>
+                          <p className="text-xs font-bold">Geofenced facial check-in matching actual hours</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </div>
+        </div>
+      )}
       
     </main>
   );
