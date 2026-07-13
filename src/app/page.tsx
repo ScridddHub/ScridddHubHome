@@ -512,7 +512,7 @@ export default function Home() {
         {/* Asymmetrical Cinematic Overlay (Jesko Jets Style) */}
         {(() => {
           const isEvenStage = currentStageIndex % 2 === 0;
-          const showTextOverlay = montageStep === 'solution' && currentScrollFrame > 1;
+          const showTextOverlay = montageStep === 'solution';
           return (
             <div className={`fixed inset-0 flex items-center p-8 md:p-24 z-30 pointer-events-none transition-all duration-1000 ${showTextOverlay ? 'opacity-100' : 'opacity-0'} ${isEvenStage ? 'justify-start' : 'justify-end'}`}>
               <div className={`max-w-xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)] ${isEvenStage ? 'text-left items-start' : 'text-right items-end flex flex-col'}`}>
