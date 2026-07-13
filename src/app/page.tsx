@@ -97,6 +97,7 @@ export default function Home() {
 
   // States to control the active modal panel (About / Features / Advantages)
   const [activeModal, setActiveModal] = useState<'none' | 'about' | 'features' | 'advantages'>('none');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   // Tracking scroll frame of the construction sequence
   const [currentScrollFrame, setCurrentScrollFrame] = useState(1);
@@ -341,16 +342,45 @@ export default function Home() {
     <main className={`w-full bg-black text-white min-h-screen relative overflow-x-hidden ${outfit.className}`}>
       
       {/* Floating Header Navigation (Visible on all scroll stages) */}
-      <header className="fixed top-0 left-0 w-full flex flex-col md:flex-row justify-between items-center md:items-start gap-4 md:gap-0 p-4 md:p-12 z-50 pointer-events-none">
-        <div className="flex space-x-4 md:space-x-8 text-[10px] md:text-xs font-semibold uppercase tracking-widest text-white/90">
-          <span onClick={() => setActiveModal('about')} className="cursor-pointer pointer-events-auto hover:text-white transition">About</span>
-          <span onClick={handleFeaturesClick} className="cursor-pointer pointer-events-auto hover:text-white transition">Features</span>
-          <span onClick={() => setActiveModal('advantages')} className="cursor-pointer pointer-events-auto hover:text-white transition">Advantages</span>
+      <header className="fixed top-0 left-0 w-full p-4 md:p-12 z-50 pointer-events-none">
+        {/* Desktop View */}
+        <div className="hidden md:flex justify-between items-start">
+          <div className="flex space-x-8 text-xs font-semibold uppercase tracking-widest text-white/90">
+            <span onClick={() => setActiveModal('about')} className="cursor-pointer pointer-events-auto hover:text-white transition">About</span>
+            <span onClick={handleFeaturesClick} className="cursor-pointer pointer-events-auto hover:text-white transition">Features</span>
+            <span onClick={() => setActiveModal('advantages')} className="cursor-pointer pointer-events-auto hover:text-white transition">Advantages</span>
+          </div>
+          <div className="text-xs font-semibold uppercase tracking-widest text-white/90 pointer-events-auto flex flex-row items-center gap-8">
+            <a href="tel:+919372652742" className="hover:text-white transition">+91 9372652742</a>
+            <a href="mailto:scridddhub@gmail.com" className="hover:text-white transition">scridddhub@gmail.com</a>
+          </div>
         </div>
-        <div className="text-[10px] md:text-xs font-semibold uppercase tracking-widest text-white/90 pointer-events-auto flex flex-row items-center gap-4 md:gap-8">
-          <a href="tel:+919372652742" className="hover:text-white transition">+91 9372652742</a>
-          <a href="mailto:scridddhub@gmail.com" className="hover:text-white transition">scridddhub@gmail.com</a>
+
+        {/* Mobile View */}
+        <div className="md:hidden flex justify-end">
+          <button 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="pointer-events-auto text-[10px] font-bold uppercase tracking-[0.2em] bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 text-white shadow-lg active:scale-95 transition-transform"
+          >
+            {mobileMenuOpen ? 'CLOSE' : 'MENU'}
+          </button>
         </div>
+
+        {/* Mobile Dropdown Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden mt-4 bg-black/85 backdrop-blur-xl border border-white/10 rounded-2xl p-6 flex flex-col space-y-6 pointer-events-auto shadow-2xl">
+            <div className="flex flex-col space-y-5 text-xs font-bold uppercase tracking-[0.2em] text-white/90">
+              <span onClick={() => { setActiveModal('about'); setMobileMenuOpen(false); }} className="cursor-pointer hover:text-white transition">About</span>
+              <span onClick={() => { handleFeaturesClick(); setMobileMenuOpen(false); }} className="cursor-pointer hover:text-white transition">Features</span>
+              <span onClick={() => { setActiveModal('advantages'); setMobileMenuOpen(false); }} className="cursor-pointer hover:text-white transition">Advantages</span>
+            </div>
+            <div className="w-full h-[1px] bg-white/10" />
+            <div className="flex flex-col space-y-5 text-[10px] font-semibold uppercase tracking-widest text-white/70">
+              <a href="tel:+919372652742" className="hover:text-white transition">+91 9372652742</a>
+              <a href="mailto:scridddhub@gmail.com" className="hover:text-white transition">scridddhub@gmail.com</a>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* SECTION 1: Sales Studio Video & Intro Problems (Relative - slides up) */}
