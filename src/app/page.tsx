@@ -515,7 +515,7 @@ export default function Home() {
           const showTextOverlay = montageStep === 'solution';
           return (
             <div className={`fixed inset-0 flex items-center p-6 md:p-24 z-10 pointer-events-none transition-all duration-1000 ${showTextOverlay ? 'opacity-100' : 'opacity-0'} ${isEvenStage ? 'justify-start' : 'justify-end'}`}>
-              <div className={`max-w-full w-full md:max-w-xl p-6 md:p-8 rounded-2xl backdrop-blur-md bg-black/40 border border-white/10 shadow-2xl space-y-4 md:space-y-6 flex flex-col ${isEvenStage ? 'text-left items-start' : 'text-right items-end'}`}>
+              <div className={`max-w-full w-full md:max-w-xl space-y-4 md:space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)] flex flex-col ${isEvenStage ? 'text-left items-start' : 'text-right items-end'}`}>
                 <h2 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white uppercase tracking-tighter leading-[0.9] break-words hyphens-auto w-full ${syne.className}`}>
                   {storyStages[currentStageIndex]?.title}
                 </h2>
