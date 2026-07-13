@@ -338,7 +338,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className={`w-full bg-black text-white min-h-screen relative ${outfit.className}`}>
+    <main className={`w-full bg-black text-white min-h-screen relative overflow-x-hidden ${outfit.className}`}>
       
       {/* Floating Header Navigation (Visible on all scroll stages) */}
       <header className="fixed top-0 left-0 w-full flex flex-col md:flex-row justify-between items-center md:items-start gap-4 md:gap-0 p-4 md:p-12 z-50 pointer-events-none">
@@ -514,13 +514,13 @@ export default function Home() {
           const isEvenStage = currentStageIndex % 2 === 0;
           const showTextOverlay = montageStep === 'solution';
           return (
-            <div className={`fixed inset-0 flex items-center p-8 md:p-24 z-10 pointer-events-none transition-all duration-1000 ${showTextOverlay ? 'opacity-100' : 'opacity-0'} ${isEvenStage ? 'justify-start' : 'justify-end'}`}>
-              <div className={`max-w-xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)] ${isEvenStage ? 'text-left items-start' : 'text-right items-end flex flex-col'}`}>
-                <h2 className={`text-4xl md:text-5xl lg:text-6xl font-extrabold text-white uppercase tracking-tighter leading-[0.9] ${syne.className}`}>
+            <div className={`fixed inset-0 flex items-center p-6 md:p-24 z-10 pointer-events-none transition-all duration-1000 ${showTextOverlay ? 'opacity-100' : 'opacity-0'} ${isEvenStage ? 'justify-start' : 'justify-end'}`}>
+              <div className={`max-w-full w-full md:max-w-xl p-6 md:p-8 rounded-2xl backdrop-blur-md bg-black/40 border border-white/10 shadow-2xl space-y-4 md:space-y-6 flex flex-col ${isEvenStage ? 'text-left items-start' : 'text-right items-end'}`}>
+                <h2 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white uppercase tracking-tighter leading-[0.9] break-words hyphens-auto w-full ${syne.className}`}>
                   {storyStages[currentStageIndex]?.title}
                 </h2>
-                <div className="w-20 h-[2px] bg-white/70" />
-                <p className="text-sm md:text-base font-semibold leading-relaxed text-white/95 max-w-md">
+                <div className="w-16 md:w-20 h-[2px] bg-white/70" />
+                <p className="text-xs sm:text-sm md:text-base font-semibold leading-relaxed text-white/95 max-w-full md:max-w-md">
                   {storyStages[currentStageIndex]?.desc}
                 </p>
               </div>
