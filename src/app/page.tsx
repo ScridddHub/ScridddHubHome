@@ -154,7 +154,18 @@ export default function Home() {
     const factoryVideo = factoryVideoRef.current;
     if (!salesVideo || !factoryVideo) return;
 
-    // Ensure factory video is paused on load
+    // Mobile Video Unlocker: Browsers block JS .play() unless triggered by user interaction
+    const unlockVideos = () => {
+      factoryVideo.play().then(() => {
+        factoryVideo.pause();
+      }).catch(() => {});
+      window.removeEventListener('touchstart', unlockVideos);
+      window.removeEventListener('click', unlockVideos);
+    };
+    window.addEventListener('touchstart', unlockVideos);
+    window.addEventListener('click', unlockVideos);
+
+    // Ensure factory video is explicitly paused on load
     factoryVideo.pause();
     factoryVideo.currentTime = 0;
 
