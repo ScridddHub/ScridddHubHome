@@ -341,13 +341,13 @@ export default function Home() {
     <main className={`w-full bg-black text-white min-h-screen relative ${outfit.className}`}>
       
       {/* Floating Header Navigation (Visible on all scroll stages) */}
-      <header className="fixed top-0 left-0 w-full flex justify-between items-center p-8 md:p-12 z-50 pointer-events-none">
-        <div className="flex space-x-8 text-xs font-semibold uppercase tracking-widest text-white/90">
+      <header className="fixed top-0 left-0 w-full flex flex-col md:flex-row justify-between items-center md:items-start gap-4 md:gap-0 p-4 md:p-12 z-50 pointer-events-none">
+        <div className="flex space-x-4 md:space-x-8 text-[10px] md:text-xs font-semibold uppercase tracking-widest text-white/90">
           <span onClick={() => setActiveModal('about')} className="cursor-pointer pointer-events-auto hover:text-white transition">About</span>
           <span onClick={handleFeaturesClick} className="cursor-pointer pointer-events-auto hover:text-white transition">Features</span>
           <span onClick={() => setActiveModal('advantages')} className="cursor-pointer pointer-events-auto hover:text-white transition">Advantages</span>
         </div>
-        <div className="text-xs font-semibold uppercase tracking-widest text-white/90 pointer-events-auto flex flex-col md:flex-row items-end md:items-center gap-2 md:gap-8">
+        <div className="text-[10px] md:text-xs font-semibold uppercase tracking-widest text-white/90 pointer-events-auto flex flex-row items-center gap-4 md:gap-8">
           <a href="tel:+919372652742" className="hover:text-white transition">+91 9372652742</a>
           <a href="mailto:scridddhub@gmail.com" className="hover:text-white transition">scridddhub@gmail.com</a>
         </div>
@@ -491,7 +491,7 @@ export default function Home() {
         {/* Dynamic Overlay: The Solution Reveal & Scroll Prompt (Screen Pauses here!) */}
         {montageStep === 'solution' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/95 z-30 transition-all duration-1000 p-8">
-            <h1 className={`text-[9vw] font-extrabold text-white tracking-tighter text-center uppercase drop-shadow-[0_8px_24px_rgba(255,255,255,0.15)] ${syne.className}`}>
+            <h1 className={`text-4xl sm:text-7xl md:text-[9vw] font-extrabold text-white tracking-tighter text-center uppercase drop-shadow-[0_8px_24px_rgba(255,255,255,0.15)] ${syne.className}`}>
               ScridddHub.
             </h1>
             <div className="mt-8 flex flex-col items-center animate-bounce">
