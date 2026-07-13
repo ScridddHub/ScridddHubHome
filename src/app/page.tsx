@@ -354,7 +354,7 @@ export default function Home() {
       </header>
 
       {/* SECTION 1: Sales Studio Video & Intro Problems (Relative - slides up) */}
-      <section className="relative w-full h-screen bg-black overflow-hidden z-10">
+      <section className="relative w-full h-screen bg-black overflow-hidden z-20">
         <video 
           ref={salesVideoRef}
           autoPlay 
@@ -416,7 +416,7 @@ export default function Home() {
       </section>
 
       {/* SECTION 2: Factory floor looping video (Relative - slides up to reveal Section 3) */}
-      <section className="relative w-full h-screen bg-black overflow-hidden z-10">
+      <section className="relative w-full h-screen bg-black overflow-hidden z-20">
         <video 
           ref={factoryVideoRef}
           muted 
@@ -514,7 +514,7 @@ export default function Home() {
           const isEvenStage = currentStageIndex % 2 === 0;
           const showTextOverlay = montageStep === 'solution';
           return (
-            <div className={`fixed inset-0 flex items-center p-8 md:p-24 z-30 pointer-events-none transition-all duration-1000 ${showTextOverlay ? 'opacity-100' : 'opacity-0'} ${isEvenStage ? 'justify-start' : 'justify-end'}`}>
+            <div className={`fixed inset-0 flex items-center p-8 md:p-24 z-10 pointer-events-none transition-all duration-1000 ${showTextOverlay ? 'opacity-100' : 'opacity-0'} ${isEvenStage ? 'justify-start' : 'justify-end'}`}>
               <div className={`max-w-xl space-y-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)] ${isEvenStage ? 'text-left items-start' : 'text-right items-end flex flex-col'}`}>
                 <h2 className={`text-4xl md:text-5xl lg:text-6xl font-extrabold text-white uppercase tracking-tighter leading-[0.9] ${syne.className}`}>
                   {storyStages[currentStageIndex]?.title}
