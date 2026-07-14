@@ -446,7 +446,7 @@ export default function Home() {
               </h3>
               <div className="w-16 h-[2px] bg-white/70" />
               <p className="text-sm md:text-base font-semibold leading-relaxed text-white">
-                Struggling to track and bill last-minute modifications demanded by clients after the final sign-off.
+                {isMobile ? "Struggling to track and bill last-minute modifications." : "Struggling to track and bill last-minute modifications demanded by clients after the final sign-off."}
               </p>
             </div>
           </div>
@@ -463,7 +463,7 @@ export default function Home() {
               </h3>
               <div className="w-16 h-[2px] bg-white/70" />
               <p className="text-sm md:text-base font-semibold leading-relaxed text-white">
-                Clients hesitating to release critical milestone payments due to a complete lack of physical site visibility.
+                {isMobile ? "Milestone payments frozen due to zero on-site visibility." : "Clients hesitating to release critical milestone payments due to a complete lack of physical site visibility."}
               </p>
             </div>
           </div>
@@ -508,7 +508,7 @@ export default function Home() {
                 </h3>
                 <div className="w-16 h-[2px] bg-white/70" />
                 <p className="text-sm md:text-base font-semibold leading-relaxed text-white">
-                  Mismatched measurements on the factory floor lead to expensive lumber and veneer cut wastage.
+                  {isMobile ? "Mismatched factory measurements leading to expensive cut wastage." : "Mismatched measurements on the factory floor lead to expensive lumber and veneer cut wastage."}
                 </p>
               </div>
             </div>
@@ -525,7 +525,7 @@ export default function Home() {
                 </h3>
                 <div className="w-16 h-[2px] bg-white/70" />
                 <p className="text-sm md:text-base font-semibold leading-relaxed text-white">
-                  Advances handed out to carpenters and subcontractors without real-time, centralized ledger tracking.
+                  {isMobile ? "Advances handed out to carpenters without centralized tracking." : "Advances handed out to carpenters and subcontractors without real-time, centralized ledger tracking."}
                 </p>
               </div>
             </div>
