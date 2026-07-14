@@ -403,7 +403,7 @@ export default function Home() {
           playsInline 
           className="absolute inset-0 w-full h-full object-cover opacity-75"
         >
-          <source src="/salesframe1.mp4" type="video/mp4" />
+          <source src="/optimised/optismedsalesframe1.mp4" type="video/mp4" />
         </video>
         
         {/* Dark gradient overlay */}
@@ -464,7 +464,7 @@ export default function Home() {
           playsInline 
           className="absolute inset-0 w-full h-full object-cover opacity-75"
         >
-          <source src="/factoryscene.mp4" type="video/mp4" />
+          <source src="/optimised/optmisedfactoryscene.mp4" type="video/mp4" />
         </video>
         
         {/* Dark gradient overlay */}
