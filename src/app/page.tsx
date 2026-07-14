@@ -151,6 +151,18 @@ export default function Home() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Reload videos when layout switches to make sure the correct source is loaded without breaking refs/listeners
+  useEffect(() => {
+    const salesVideo = salesVideoRef.current;
+    const factoryVideo = factoryVideoRef.current;
+    if (salesVideo && factoryVideo) {
+      salesVideo.load();
+      factoryVideo.load();
+      factoryVideo.pause();
+      factoryVideo.currentTime = 0;
+    }
+  }, [isMobile]);
+
   useEffect(() => {
     // Disable browser scroll restoration and force start at top on refresh
     if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
@@ -407,7 +419,6 @@ export default function Home() {
       {/* SECTION 1: Sales Studio Video & Intro Problems (Relative - slides up) */}
       <section className="relative w-full h-screen bg-black overflow-hidden z-20">
         <video 
-          key={isMobile ? 'mobile-sales' : 'desktop-sales'}
           ref={salesVideoRef}
           autoPlay 
           muted 
@@ -470,7 +481,6 @@ export default function Home() {
       {/* SECTION 2: Factory floor looping video (Relative - slides up to reveal Section 3) */}
       <section className="relative w-full h-screen bg-black overflow-hidden z-20">
         <video 
-          key={isMobile ? 'mobile-factory' : 'desktop-factory'}
           ref={factoryVideoRef}
           muted 
           playsInline 
