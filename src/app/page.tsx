@@ -436,7 +436,7 @@ export default function Home() {
           
           {/* Left Column (Top aligned) */}
           <div className="flex flex-col justify-start items-start space-y-6 md:space-y-8 mt-0 max-w-full">
-            <h1 className={`text-4xl md:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-extrabold uppercase tracking-tighter leading-[0.9] text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] ${syne.className}`}>
+            <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-extrabold uppercase tracking-tighter leading-[0.9] text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] ${syne.className}`}>
               Endless<br />Changes
             </h1>
             
@@ -452,12 +452,12 @@ export default function Home() {
           </div>
 
           {/* Right Column (Offset lower) */}
-          <div className="flex flex-col justify-start items-end space-y-6 md:space-y-8 mt-12 md:mt-24 text-right justify-self-end max-w-full">
-            <h1 className={`text-4xl md:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-extrabold uppercase tracking-tighter leading-[0.9] text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] ${syne.className}`}>
+          <div className="flex flex-col justify-start items-start md:items-end space-y-6 md:space-y-8 mt-12 md:mt-24 text-left md:text-right justify-self-start md:justify-self-end max-w-full">
+            <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-extrabold uppercase tracking-tighter leading-[0.9] text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] ${syne.className}`}>
               Frozen<br />Cashflow
             </h1>
             
-            <div className="max-w-xs space-y-4 flex flex-col items-end drop-shadow-[0_4px_6px_rgba(0,0,0,0.9)]">
+            <div className="max-w-xs space-y-4 flex flex-col items-start md:items-end drop-shadow-[0_4px_6px_rgba(0,0,0,0.9)]">
               <h3 className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-white/90">
                 The Trust Barrier
               </h3>
@@ -498,7 +498,7 @@ export default function Home() {
             
             {/* Left Column (Factory Dimension Issue) */}
             <div className="flex flex-col justify-start items-start space-y-6 md:space-y-8 mt-0 max-w-full">
-              <h1 className={`text-4xl md:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-extrabold uppercase tracking-tighter leading-[0.9] text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] ${syne.className}`}>
+              <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-extrabold uppercase tracking-tighter leading-[0.9] text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] ${syne.className}`}>
                 Material<br />Leakage
               </h1>
               
@@ -514,12 +514,12 @@ export default function Home() {
             </div>
 
             {/* Right Column (Factory Advance Issue) */}
-            <div className="flex flex-col justify-start items-end space-y-6 md:space-y-8 mt-12 md:mt-24 text-right justify-self-end max-w-full">
-              <h1 className={`text-4xl md:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-extrabold uppercase tracking-tighter leading-[0.9] text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] ${syne.className}`}>
+            <div className="flex flex-col justify-start items-start md:items-end space-y-6 md:space-y-8 mt-12 md:mt-24 text-left md:text-right justify-self-start md:justify-self-end max-w-full">
+              <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-[4rem] xl:text-[4.5rem] font-extrabold uppercase tracking-tighter leading-[0.9] text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] ${syne.className}`}>
                 Advance<br />Leaks
               </h1>
               
-              <div className="max-w-xs space-y-4 flex flex-col items-end drop-shadow-[0_4px_6px_rgba(0,0,0,0.9)]">
+              <div className="max-w-xs space-y-4 flex flex-col items-start md:items-end drop-shadow-[0_4px_6px_rgba(0,0,0,0.9)]">
                 <h3 className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-white/90">
                   Untracked Outlays
                 </h3>
