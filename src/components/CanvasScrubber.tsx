@@ -64,13 +64,22 @@ export default function CanvasScrubber({
     const context = canvas?.getContext('2d');
     if (!canvas || !context || scrollImages.length === 0) return;
 
-    // Adjust canvas resolution for high-DPI displays
+    // Adjust canvas resolution for high-DPI displays, but cap it to prevent massive GPU overhead
+    const isMobileViewport = typeof window !== 'undefined' && window.innerWidth < 768;
     const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
-    canvas.width = 1920 * dpr;
-    canvas.height = 1080 * dpr;
+    
+    if (isMobileViewport) {
+      // 1280x720 is retina-sharp on small screens and rendering is 20x faster than 3x DPR scaling
+      canvas.width = 1280;
+      canvas.height = 720;
+    } else {
+      const cappedDpr = Math.min(dpr, 2);
+      canvas.width = 1920 * cappedDpr;
+      canvas.height = 1080 * cappedDpr;
+    }
 
     context.imageSmoothingEnabled = true;
-    context.imageSmoothingQuality = 'high';
+    context.imageSmoothingQuality = 'medium';
 
     const animationState = {
       frame: 1
