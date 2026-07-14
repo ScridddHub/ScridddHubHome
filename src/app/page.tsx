@@ -98,6 +98,7 @@ export default function Home() {
   // States to control the active modal panel (About / Features / Advantages)
   const [activeModal, setActiveModal] = useState<'none' | 'about' | 'features' | 'advantages'>('none');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   
   // Tracking scroll frame of the construction sequence
   const [currentScrollFrame, setCurrentScrollFrame] = useState(1);
@@ -140,6 +141,15 @@ export default function Home() {
       ease: 'power3.inOut'
     });
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     // Disable browser scroll restoration and force start at top on refresh
@@ -397,13 +407,14 @@ export default function Home() {
       {/* SECTION 1: Sales Studio Video & Intro Problems (Relative - slides up) */}
       <section className="relative w-full h-screen bg-black overflow-hidden z-20">
         <video 
+          key={isMobile ? 'mobile-sales' : 'desktop-sales'}
           ref={salesVideoRef}
           autoPlay 
           muted 
           playsInline 
           className="absolute inset-0 w-full h-full object-cover opacity-75"
         >
-          <source src="/optimised/optismedsalesframe1.mp4" type="video/mp4" />
+          <source src={isMobile ? "/optimised/mobileviewsalesframe.mp4" : "/optimised/optismedsalesframe1.mp4"} type="video/mp4" />
         </video>
         
         {/* Dark gradient overlay */}
@@ -459,12 +470,13 @@ export default function Home() {
       {/* SECTION 2: Factory floor looping video (Relative - slides up to reveal Section 3) */}
       <section className="relative w-full h-screen bg-black overflow-hidden z-20">
         <video 
+          key={isMobile ? 'mobile-factory' : 'desktop-factory'}
           ref={factoryVideoRef}
           muted 
           playsInline 
           className="absolute inset-0 w-full h-full object-cover opacity-75"
         >
-          <source src="/optimised/optmisedfactoryscene.mp4" type="video/mp4" />
+          <source src={isMobile ? "/optimised/factorymobilevieww.mp4" : "/optimised/optmisedfactoryscene.mp4"} type="video/mp4" />
         </video>
         
         {/* Dark gradient overlay */}
