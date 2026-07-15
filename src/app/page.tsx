@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Outfit, Syne } from 'next/font/google';
 import gsap from 'gsap';
+import Link from 'next/link';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import CanvasScrubber, { SequenceConfig } from '@/components/CanvasScrubber';
 
@@ -95,8 +96,7 @@ export default function Home() {
   const [montageStep, setMontageStep] = useState<'idle' | 'montage' | 'question' | 'solution'>('idle');
   const [activePhrase, setActivePhrase] = useState('');
 
-  // States to control the active modal panel
-  const [activeModal, setActiveModal] = useState<'none' | 'clients'>('none');
+  // State removed since modal is gone
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   
@@ -369,7 +369,7 @@ export default function Home() {
         {/* Desktop View */}
         <div className="hidden md:flex justify-between items-start">
           <div className="flex space-x-8 text-xs font-semibold uppercase tracking-widest text-white/90">
-            <span onClick={() => setActiveModal('clients')} className="cursor-pointer pointer-events-auto hover:text-white transition">Clients</span>
+            <Link href="/clients" className="cursor-pointer pointer-events-auto hover:text-white transition">Our Clients</Link>
           </div>
           <div className="text-xs font-semibold uppercase tracking-widest text-white/90 pointer-events-auto flex flex-row items-center gap-8">
             <a href="tel:+919372652742" className="hover:text-white transition">+91 9372652742</a>
@@ -391,7 +391,7 @@ export default function Home() {
         {mobileMenuOpen && (
           <div className="md:hidden mt-4 bg-black/85 backdrop-blur-xl border border-white/10 rounded-2xl p-6 flex flex-col space-y-6 pointer-events-auto shadow-2xl">
             <div className="flex flex-col space-y-5 text-xs font-bold uppercase tracking-[0.2em] text-white/90">
-              <span onClick={() => { setActiveModal('clients'); setMobileMenuOpen(false); }} className="cursor-pointer hover:text-white transition">Clients</span>
+              <Link href="/clients" onClick={() => setMobileMenuOpen(false)} className="cursor-pointer hover:text-white transition">Our Clients</Link>
             </div>
             <div className="w-full h-[1px] bg-white/10" />
             <div className="flex flex-col space-y-5 text-[10px] font-semibold uppercase tracking-widest text-white/70">
@@ -578,75 +578,7 @@ export default function Home() {
         })()}
       </CanvasScrubber>
 
-      {/* Full-screen Overlay Modals */}
-      {activeModal !== 'none' && (
-        <div className="fixed inset-0 bg-black/95 backdrop-blur-2xl z-[100] flex items-center justify-center p-4 md:p-12 transition-all duration-500">
-          
-          {/* Subtle Background Glow spot */}
-          <div className="absolute top-1/4 left-1/4 w-[40vw] h-[40vw] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
-          <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none" />
-
-          {/* Modal Container */}
-          <div className="relative w-full max-w-6xl h-full max-h-[85vh] bg-black/40 border border-white/5 rounded-3xl p-6 md:p-16 shadow-[0_24px_80px_rgba(0,0,0,0.9)] overflow-y-auto z-10 flex flex-col md:grid md:grid-cols-12 gap-8 md:gap-12">
-            
-            {/* Close Button */}
-            <button 
-              onClick={() => setActiveModal('none')} 
-              className="absolute top-8 right-8 text-white/40 hover:text-white text-2xl transition-all duration-300 pointer-events-auto hover:rotate-90"
-            >
-              ✕
-            </button>
-
-            {/* Left Column: Big Asymmetrical Title (4 cols) */}
-            <div className="md:col-span-4 flex flex-col justify-between h-full border-b md:border-b-0 md:border-r border-white/10 pb-6 md:pb-0 md:pr-8">
-              <div className="space-y-4">
-                <span className="text-[10px] tracking-[0.4em] text-emerald-400 font-extrabold uppercase block font-sans">
-                  {activeModal === 'clients' && 'Our Partners'}
-                </span>
-                <h2 className={`text-4xl md:text-5xl font-black tracking-tighter text-white uppercase leading-[0.9] ${syne.className}`}>
-                  {activeModal === 'clients' && 'Our\nClients'}
-                </h2>
-              </div>
-              
-              <div className="hidden md:block mt-auto">
-                <h1 className="text-[5vw] font-black uppercase text-white/[0.02] tracking-tighter leading-none select-none">
-                  {activeModal}
-                </h1>
-              </div>
-            </div>
-
-            {/* Right Column: Premium Content Blocks (8 cols) */}
-            <div className="md:col-span-8 overflow-y-auto pr-2 space-y-8 font-sans">
-              
-              {/* Modal - Clients */}
-              {activeModal === 'clients' && (
-                <div className="space-y-8">
-                  <p className="text-gray-300 text-base md:text-lg leading-relaxed max-w-2xl font-light">
-                    We partner with industry leaders across construction, manufacturing, and interior design to streamline their physical operations and digital workflows.
-                  </p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                    {/* Placeholder Client 1 */}
-                    <div className="group border border-white/5 bg-white/[0.01] p-6 rounded-2xl flex flex-col gap-4 items-start transition-all duration-300 hover:border-white/10 hover:bg-white/[0.03]">
-                      <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-emerald-400 font-bold font-sans">C1</div>
-                      <h4 className={`text-xl font-bold text-white uppercase ${syne.className}`}>Client Name</h4>
-                      <p className="text-xs text-gray-400 leading-relaxed">Description of the client and how ScridddHub helped them optimize their workflow.</p>
-                    </div>
-
-                    {/* Placeholder Client 2 */}
-                    <div className="group border border-white/5 bg-white/[0.01] p-6 rounded-2xl flex flex-col gap-4 items-start transition-all duration-300 hover:border-white/10 hover:bg-white/[0.03]">
-                      <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-emerald-400 font-bold font-sans">C2</div>
-                      <h4 className={`text-xl font-bold text-white uppercase ${syne.className}`}>Client Name</h4>
-                      <p className="text-xs text-gray-400 leading-relaxed">Description of the client and how ScridddHub helped them optimize their workflow.</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Full-screen Overlay Modals Removed */}
       
     </main>
   );
