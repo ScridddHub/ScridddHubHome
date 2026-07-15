@@ -49,6 +49,9 @@ export default function ClientsPage() {
               src="/ourclients/shivajienterprisesitephoto.webp" 
               alt="Shivaji Enterprise Site" 
               fill
+              priority
+              unoptimized
+              sizes="(max-width: 768px) 100vw, 66vw"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             {/* Gradient Overlay */}
@@ -89,6 +92,9 @@ export default function ClientsPage() {
                   src="/ourclients/shivajienterprise.webp" 
                   alt="Shivaji Enterprise Logo" 
                   fill
+                  priority
+                  unoptimized
+                  sizes="64px"
                   className="object-contain p-2"
                 />
               </div>
