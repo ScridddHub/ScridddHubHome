@@ -77,10 +77,10 @@ export default function ClientsPage() {
                   ScridddHub powered the initial construction phase of their massive warehouse facility. Today, our custom ERP acts as their central nervous system, driving their daily operations and logistics flawlessly.
                 </p>
               </div>
-              <button className="bg-white text-black text-[10px] font-bold uppercase tracking-widest px-6 py-3.5 rounded-full hover:bg-gray-100 transition flex items-center gap-2 shrink-0">
+              <Link href="/clients/shivaji-enterprise" className="bg-white text-black text-[10px] font-bold uppercase tracking-widest px-6 py-3.5 rounded-full hover:bg-gray-100 transition flex items-center gap-2 shrink-0">
                 View Case Study 
                 <span className="text-lg leading-none mt-[-2px]">→</span>
-              </button>
+              </Link>
             </div>
           </div>
 
