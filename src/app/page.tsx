@@ -358,6 +358,15 @@ export default function Home() {
         clearTimeout(skipTimerRef.current);
       }
       clearInterval(phraseInterval);
+
+      // Abort ongoing video downloads to prevent network clogging on other pages
+      salesVideo.pause();
+      salesVideo.removeAttribute('src');
+      salesVideo.load();
+      
+      factoryVideo.pause();
+      factoryVideo.removeAttribute('src');
+      factoryVideo.load();
     };
   }, []);
 

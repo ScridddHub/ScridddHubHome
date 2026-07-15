@@ -56,6 +56,13 @@ export default function CanvasScrubber({
       images.push(img);
     }
     setScrollImages(images);
+
+    return () => {
+      // Abort all image requests when component unmounts to prevent network clogging
+      images.forEach(img => {
+        img.src = '';
+      });
+    };
   }, [totalScrollFrames]);
 
   // Handle canvas drawing and ScrollTrigger binding
