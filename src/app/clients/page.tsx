@@ -60,10 +60,10 @@ export default function ClientsPage() {
             {/* Badges */}
             <div className="absolute top-6 left-6 flex gap-2 z-10">
               <span className="bg-white/90 backdrop-blur-sm text-black text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full">
-                Construction
+                Warehouse Construction
               </span>
               <span className="bg-white/90 backdrop-blur-sm text-black text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full">
-                Active Site
+                Daily Operations ERP
               </span>
             </div>
 
@@ -73,8 +73,8 @@ export default function ClientsPage() {
                 <h3 className={`text-3xl md:text-4xl font-bold uppercase tracking-tight mb-2 ${syne.className}`}>
                   Shivaji Enterprise
                 </h3>
-                <p className="text-white/80 text-sm max-w-md font-light">
-                  A successful integration of ScridddHub's operational engine. Eliminating material leakage and automating subcontractor payments on-site.
+                <p className="text-white/80 text-sm max-w-md font-light leading-relaxed">
+                  ScridddHub powered the initial construction phase of their massive warehouse facility. Today, our custom ERP acts as their central nervous system, driving their daily operations and logistics flawlessly.
                 </p>
               </div>
               <button className="bg-white text-black text-[10px] font-bold uppercase tracking-widest px-6 py-3.5 rounded-full hover:bg-gray-100 transition flex items-center gap-2 shrink-0">
@@ -126,7 +126,7 @@ export default function ClientsPage() {
         
         <div className="bg-white border border-black/5 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] rounded-[2rem] p-10 md:p-16 relative w-full text-left">
           <p className="text-lg md:text-xl font-medium leading-relaxed text-black/80">
-            "ScridddHub exceeded my expectations! We commissioned them to integrate their engine into our workflow and the result was amazing. They eliminated material leakage and automated our entire subcontractor payment pipeline seamlessly."
+            "ScridddHub has been our operational backbone since day one. They didn't just help us track materials and contractor payments during the construction of our warehouse—their custom ERP now flawlessly runs our day-to-day operations. It's a complete, end-to-end digital transformation."
           </p>
           
           <div className="mt-10 flex items-center gap-4">
@@ -136,7 +136,7 @@ export default function ClientsPage() {
             </div>
             <div>
               <h5 className="font-bold text-sm text-black">Shivaji Enterprise</h5>
-              <p className="text-xs text-black/50">Director of Operations</p>
+              <p className="text-xs text-black/50">Warehouse Director</p>
             </div>
           </div>
 
