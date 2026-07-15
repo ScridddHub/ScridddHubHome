@@ -25,15 +25,15 @@ export default function ClientsPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-40 md:pt-48 pb-20 px-6 md:px-16 max-w-7xl mx-auto flex flex-col items-center text-center">
-        <div className="inline-block px-4 py-1.5 rounded-full border border-black/10 text-[10px] font-bold uppercase tracking-widest mb-8 bg-white shadow-sm">
+      <section className="pt-32 md:pt-48 pb-16 md:pb-20 px-6 md:px-16 max-w-7xl mx-auto flex flex-col items-center text-center">
+        <div className="inline-block px-4 py-1.5 rounded-full border border-black/10 text-[10px] font-bold uppercase tracking-widest mb-6 md:mb-8 bg-white shadow-sm">
           Trusted Partners
         </div>
-        <h1 className={`text-5xl md:text-7xl lg:text-[5.5rem] font-black tracking-tighter leading-[0.9] text-black ${syne.className}`}>
-          Building <span className="italic font-light">visions</span> &<br />
-          creating <span className="italic font-light">reality</span> with ScridddHub
+        <h1 className={`text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] font-black tracking-tighter leading-[1.1] md:leading-[0.9] text-black ${syne.className}`}>
+          Building <span className="italic font-light">visions</span> &<br className="hidden md:block" />
+          {' '}creating <span className="italic font-light">reality</span> with ScridddHub
         </h1>
-        <p className="mt-8 text-black/60 max-w-xl text-sm md:text-base font-medium">
+        <p className="mt-6 md:mt-8 text-black/60 max-w-xl text-sm md:text-base font-medium">
           We partner with futuristic companies focused on innovative operations, sustainability, and complete digital transparency.
         </p>
       </section>
