@@ -141,18 +141,6 @@ export default function Home() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Reload videos when layout switches to make sure the correct source is loaded without breaking refs/listeners
-  useEffect(() => {
-    const salesVideo = salesVideoRef.current;
-    const factoryVideo = factoryVideoRef.current;
-    if (salesVideo && factoryVideo) {
-      salesVideo.load();
-      factoryVideo.load();
-      factoryVideo.pause();
-      factoryVideo.currentTime = 0;
-    }
-  }, [isMobile]);
-
   useEffect(() => {
     // Disable browser scroll restoration and force start at top on refresh
     if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
@@ -413,14 +401,16 @@ export default function Home() {
 
       {/* SECTION 1: Sales Studio Video & Intro Problems (Relative - slides up) */}
       <section className="relative w-full h-screen bg-black overflow-hidden z-20">
-        <video 
+        <video
           ref={salesVideoRef}
-          autoPlay 
-          muted 
-          playsInline 
+          autoPlay
+          muted
+          playsInline
+          preload="auto"
           className="absolute inset-0 w-full h-full object-cover opacity-75"
         >
-          <source src={isMobile ? "/optimised/mobileviewsalesframe.mp4" : "/optimised/optismedsalesframe1.mp4"} type="video/mp4" />
+          <source media="(max-width: 767px)" src="/optimised/mobileviewsalesframe.mp4" type="video/mp4" />
+          <source src="/optimised/optismedsalesframe1.mp4" type="video/mp4" />
         </video>
         
         {/* Dark gradient overlay */}
@@ -475,13 +465,15 @@ export default function Home() {
 
       {/* SECTION 2: Factory floor looping video (Relative - slides up to reveal Section 3) */}
       <section className="relative w-full h-screen bg-black overflow-hidden z-20">
-        <video 
+        <video
           ref={factoryVideoRef}
-          muted 
-          playsInline 
+          muted
+          playsInline
+          preload="none"
           className="absolute inset-0 w-full h-full object-cover opacity-75"
         >
-          <source src={isMobile ? "/optimised/factorymobilevieww.mp4" : "/optimised/optmisedfactoryscene.mp4"} type="video/mp4" />
+          <source media="(max-width: 767px)" src="/optimised/factorymobilevieww.mp4" type="video/mp4" />
+          <source src="/optimised/optmisedfactoryscene.mp4" type="video/mp4" />
         </video>
         
         {/* Dark gradient overlay */}
