@@ -401,20 +401,13 @@ export default function Home() {
 
       {/* SECTION 1: Sales Studio Video & Intro Problems (Relative - slides up) */}
       <section className="relative w-full h-screen bg-black overflow-hidden z-20">
-        <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center md:hidden"
-          style={{ backgroundImage: "url('/optimised/sales-poster-mobile.jpg')" }}
-        />
-        <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center hidden md:block"
-          style={{ backgroundImage: "url('/optimised/sales-poster.jpg')" }}
-        />
         <video
           ref={salesVideoRef}
           autoPlay
           muted
           playsInline
           preload="auto"
+          poster={isMobile ? "/optimised/sales-poster-mobile.jpg" : "/optimised/sales-poster.jpg"}
           className="absolute inset-0 w-full h-full object-cover opacity-75"
         >
           <source media="(max-width: 767px)" src="/optimised/mobileviewsalesframe.mp4" type="video/mp4" />
@@ -473,19 +466,12 @@ export default function Home() {
 
       {/* SECTION 2: Factory floor looping video (Relative - slides up to reveal Section 3) */}
       <section className="relative w-full h-screen bg-black overflow-hidden z-20">
-        <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center md:hidden"
-          style={{ backgroundImage: "url('/optimised/factory-poster-mobile.jpg')" }}
-        />
-        <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center hidden md:block"
-          style={{ backgroundImage: "url('/optimised/factory-poster.jpg')" }}
-        />
         <video
           ref={factoryVideoRef}
           muted
           playsInline
           preload="none"
+          poster={isMobile ? "/optimised/factory-poster-mobile.jpg" : "/optimised/factory-poster.jpg"}
           className="absolute inset-0 w-full h-full object-cover opacity-75"
         >
           <source media="(max-width: 767px)" src="/optimised/factorymobilevieww.mp4" type="video/mp4" />
